@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Repositories\UserRepository;
+use JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 use App\Models\User;
 use Validator;
 
@@ -49,7 +51,8 @@ class UsersController extends Controller
     public function store()
     {
     	//get request
-    	$user = request()->all();
+        // dd("anuj singh is  working here");
+        $user = request()->all();
 
     	//validation
     	$validation = validator::make($user, [
@@ -72,6 +75,7 @@ class UsersController extends Controller
     	//user value send repository
     	$userData = $this->userRepo->userCreate($user);
 
+        // dd($userData);
     	//create response
     	if($userData) {
 			return response()->json([
@@ -126,6 +130,27 @@ class UsersController extends Controller
     			'status' => '200',
     		], 200);
     	}
+    }
+
+    public function login(Request $request)
+    {
+        // grab credentials from the request
+        
+        $credentials = $request->only('email', 'password');
+        try {
+            // dd("$2y$10$TWYUL3NEorCUmZZYK8QbnelyeeBmyYnMqawQNaRM3Wt8aH6aAuZIq");
+            // attempt to verify the credentials and create a token for the user
+            // dd(JWTAuth::attempt($credentials));
+            if (! $token = JWTAuth::attempt($credentials)) {
+                return response()->json(['error' => 'invalid_credentials'], 412);
+            }
+        } catch (JWTException $e) {
+            // something went wrong whilst attempting to encode the token
+            return response()->json(['error' => 'could_not_create_token'], 500);
+        }
+
+        // all good so return the token
+        return response()->json(compact('token'), $credentials);
     }
 
 }

@@ -12,7 +12,7 @@ class UserRepository
 	 */
 	public function userCreate($data)
 	{
-
+		// dd($data);
 		$image = $data['image'];
 		$fullname = null;
 		if($image) {
@@ -44,7 +44,7 @@ class UserRepository
 	 */
 	public function update($request, $id)
 	{
-		$image = $request->file('image');;
+		$image = $request->file('image');
 		$fullname = null;
 		if($image) {
 
